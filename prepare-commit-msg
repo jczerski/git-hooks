@@ -1,0 +1,19 @@
+#!/bin/sh
+# Automatically adds branch name and branch description to every commit message.
+
+# Succeed on all merge messages, as evidenced by MERGE_MSG existing.
+[ -f $GIT_DIR/MERGE_MSG ] && exit 0
+
+# Get branch name.
+TASK_KEY=$(git branch | grep '*' | sed 's/.*\///')
+
+# Get branch description.
+ORIGINAL_MESSAGE=$(cat "$1")
+
+# Capitalize first letter and add dot if it does not exists.
+TRANSFORMED_MESSAGE=$(echo $ORIGINAL_MESSAGE | awk '{print toupper(substr($0,0,1))tolower(substr($0,2))}' | sed 's/[^[:punct:]]$/&./')
+
+if [ "$TASK_KEY" != "(no branch)" ]; then
+	#Automatically adds branch name and branch description to every commit message.
+	echo "[$TASK_KEY] $TRANSFORMED_MESSAGE" > "$1"
+fi
